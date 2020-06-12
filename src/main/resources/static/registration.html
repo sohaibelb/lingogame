@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration</title>
+
+    <style>
+
+        label {
+            margin-left: 25%;
+        }
+
+        h3  {
+            margin-left: 45%;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box
+        }
+
+        form {
+            display: block;
+            margin-top: 0em;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-control {
+            margin-left: 25%;
+            display: block;
+            width: 50%;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+
+        button, input {
+            overflow: visible;
+        }
+
+        button, input, optgroup, select, textarea {
+            margin: 0;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+        }
+
+        input[type=checkbox], input[type=radio] {
+            box-sizing: border-box;
+            padding: 0;
+        }
+
+        .btn:not(:disabled):not(.disabled) {
+            cursor: pointer;
+        }
+
+        .btn-block {
+            display: block;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn {
+            margin-left: 25%;
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: .25rem;
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+
+        a {
+            width: 50%;
+            color: #007bff;
+            text-decoration: none;
+            background-color: transparent;
+            -webkit-text-decoration-skip: objects;
+        }
+    </style>
+</head>
+<body>
+<form id="registrationForm">
+    <h3>Register</h3>
+    <div class="form-group">
+        <label for="Username">Username</label>
+        <input name="username" class="form-control" type="text" placeholder="Enter username" required>
+    </div>
+    <div class="form-group">
+        <label for="Password">Password</label>
+        <input name="password" class="form-control" type="password" placeholder="Password" required>
+    </div>
+    <a id="register" class="btn btn-primary btn-block">
+        Register</a>
+</form>
+
+<script>
+    function register() {
+        var formData = new FormData(document.querySelector("#registrationForm"));
+        var encData = new URLSearchParams(formData.entries());
+        fetch("/register", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+
+            //make sure to serialize your JSON body
+            body: JSON.stringify({
+                username: encData.get("username"),
+                password: encData.get("password")
+            })
+        })
+            .then((response) => {
+                if (response.ok) {
+                    window.location.href = "/";
+                } else {
+                    alert("Something went wrong while creating an account");
+                }
+            })
+    }
+
+    var registerButton = document.querySelector("#register")
+    if (registerButton) {
+        registerButton.addEventListener("click", register);
+    }
+</script>
+</body>
+</html>

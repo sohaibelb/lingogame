@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        token = parseJwt(window.sessionStorage.getItem("myJWT"));
+        if (!token) {
+            window.location.href = "/";
+        }
+
+        function parseJwt(token) {
+            if (token) {
+                var base64Url = token.split('.')[1];
+                var base64 = base64Url.replace('-', '+').replace('_', '/');
+                return JSON.parse(window.atob(base64));
+            }
+        };
+
+    </script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: white;
+        }
+
+        .invisible {
+            display: none;
+        }
+
+        .visible {
+            display: block;
+        }
+
+        button {
+            margin: auto;
+            background: white;
+            border: 1px solid black;
+            padding: 10px 15px;
+            font-size: 20px;
+        }
+
+        button:hover {
+            background-color: green;
+            color: white;
+        }
+
+        #msgBox {
+            text-align: center;
+            font-size: 3.5em;
+            font-family: 'Arial', sans-serif;
+            margin: 0.1em 0em;
+        }
+
+        @media screen and (max-width: 480px) {
+            #msgBox {
+                font-size: 2.5em;
+            }
+        }
+
+        #smallMsg {
+            text-align: center;
+            padding: 0px 0px 10px 0px;
+            font-size: 1.1em;
+        }
+
+        #guess {
+            border: 1px black solid;
+            padding: 5px;
+            margin: 10px auto;
+            display: block;
+
+        }
+
+        #container {
+            margin: auto;
+            width: 32em;
+        }
+
+        .correct {
+            background: green;
+        }
+
+        .present {
+            background: yellow;
+        }
+
+        .absent {
+            background: white;
+        }
+
+        .invalid {
+            background: red;
+        }
+
+        .btn:not(:disabled):not(.disabled) {
+            cursor: pointer;
+        }
+
+        .btn-block {
+            display: block;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: .25rem;
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            background-color: transparent;
+            -webkit-text-decoration-skip: objects;
+        }
+
+        .default {
+            background: white;
+        }
+
+        .square {
+            vertical-align: top;
+            margin-top: 4px;
+            border: 1px black solid;
+            border-radius: 5px;
+            display: inline-block;
+            height: 1.25em;
+            width: 1.25em;
+            text-align: center;
+            font-size: 3.5em;
+            font-family: 'Lato', sans-serif;
+        }
+    </style>
+</head>
+<body>
+
+<div id='msgBox'>Guess the word!</div>
+<div id="smallMsg">Green = correct letter, Yellow = wrong place, White = letter is not in word, Red = Whole guess
+    invalid
+</div>
+<div id="container">
+    <div id="row1">
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+    </div>
+    <div id="row2">
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+    </div>
+    <div id="row3">
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+    </div>
+    <div id="row4">
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+    </div>
+    <div id="row5">
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+        <div class="square default"></div>
+    </div>
+</div>
+<input id="guess" onkeypress="submitguess(this)" placeholder='Type your guess!'>
+<a href="/homescreen.html" class="btn btn-primary btn-block">To home screen</a>
+<button id="button" class="invisible" onClick="nextRound()">Go to Next Round</button>
+
+<script>
+    //setting timer
+    localStorage.timer = Date.now();
+
+    var input = document.getElementById('guess'); // the input box
+    var button = document.getElementById('button'); // the button
+    var guess;
+
+    // change css class
+    var changeClass = function (cng, old, newClass) {
+        cng.className = cng.className.replace(old, newClass);
+    }
+
+    // game loop
+    var gameloop = function () {
+        fetch("/game", {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem("myJWT")
+            }
+        })
+            .then(response => response.json())
+            .then(function (game) {
+                    var pressn = 1; // turn number
+                    var wordGuessed = true;
+
+                    //To get the amount of squares of the rows
+                    var squaresCount = document.getElementById("row1").getElementsByTagName('div');
+
+                    //Setting the amount of squares in each row equal to the word length
+                    if (squaresCount.length != game.round.word.name.length) {
+                        for (let i = 1; i < 6;) {
+                            var row = document.getElementById("row" + i);
+                            var newSquare = document.createElement("div");
+                            newSquare.setAttribute("class", "square default");
+                            row.appendChild(newSquare);
+                            if (game.round.word.name.length == 7) {
+                                var newSquare = document.createElement("div");
+                                newSquare.setAttribute("class", "square default");
+                                row.appendChild(newSquare);
+                            }
+                            i++;
+                        }
+                    }
+
+                    //Give first letter
+                    document.getElementById("row1").firstElementChild.innerHTML = game.round.word.name[0].toUpperCase();
+                    var feedbackOnTurn = game.round.feedbackOnTurns[pressn];
+
+                    //If enter is pressed
+                    input.onkeypress = function (event) {
+                        if (event.key == "Enter" || event.keyCode == 13) {
+                            // reset message
+                            document.getElementById('smallMsg').innerHTML = "Green = correct letter, Yellow = wrong place, White = letter is not in word, Red = Whole guess invalid";
+
+                            // current row
+                            var current = "row" + pressn;
+                            var childDivs = document.getElementById(current).getElementsByTagName('div');
+
+                            //Post the guess word
+                            guess = input.value.toLowerCase();
+                            fetch("/feedback/" + guess, {
+                                method: 'POST',
+                                headers: {
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json',
+                                    'Authorization': 'Bearer ' + window.sessionStorage.getItem("myJWT")
+                                },
+
+                                //make sure to serialize your JSON body
+                                body: JSON.stringify(
+                                    feedbackOnTurn
+                                )
+                            })
+                                .then((response) => {
+                                        response.json().then(myJson => {
+                                                input.value = ""; // clear input box
+
+                                            //If 10 seconds are passed or the guess didn't meet the requirements
+                                                if (myJson.message || Date.now() - window.localStorage.getItem("timer") >= 10000) {
+                                                    localStorage.timer = Date.now();
+                                                    if (myJson.message) {
+                                                        alert(myJson.message);
+                                                    } else {
+                                                        alert("You didn't guess in 10 seconds! Next Turn!");
+                                                    }
+                                                    if (pressn === 5) {
+                                                        //If turns are over, the game ends
+                                                        end("Sorry, you lost.", "Correct word: " + game.round.word.name);
+                                                    }
+                                                    pressn++;
+                                                    document.getElementById(current).firstElementChild.innerHTML = game.round.word.name[0].toUpperCase();
+                                                    return;
+                                                } else {
+                                                    //If not continue
+                                                    //Reset the timer
+                                                    localStorage.timer = Date.now();
+
+                                                    for (const character of myJson.feedbackOnCharacterArrayList) {
+                                                        if (character.feedback != "Correct") {
+                                                            wordGuessed = false;
+                                                            break;
+                                                        }
+                                                        wordGuessed = true;
+                                                    }
+
+                                                    var i = 0;
+                                                    for (const character of myJson.feedbackOnCharacterArrayList) {
+                                                        childDivs[i].innerHTML = character.character.toUpperCase();
+
+                                                        if (character.feedback == "Correct") {
+                                                            changeClass(childDivs[i], 'default', 'correct');
+                                                        } else if (character.feedback == "Absent") {
+                                                            changeClass(childDivs[i], 'default', 'absent');
+                                                        } else if (character.feedback == "Invalid") {
+                                                            changeClass(childDivs[i], 'default', 'invalid');
+                                                        } else if (character.feedback == "Present") {
+                                                            changeClass(childDivs[i], 'default', 'present');
+                                                        }
+                                                        i++;
+                                                    }
+
+                                                    //If the guessed word is correct
+                                                    if (wordGuessed === true) {
+                                                        //Giving the score to the backend
+                                                        fetch("/game/" + pressn, {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'Accept': 'application/json',
+                                                                'Content-Type': 'application/json',
+                                                                'Authorization': 'Bearer ' + window.sessionStorage.getItem("myJWT")
+                                                            },
+
+                                                            //make sure to serialize your JSON body
+                                                            body: JSON.stringify(
+                                                                myJson
+                                                            )
+                                                        })
+                                                            .then((response) => {
+                                                                if (response.ok) {
+                                                                    localStorage.clear();
+                                                                    end("Congrats, you won!", "Move to the next round!");
+                                                                    alert("Congrats, you won!");
+                                                                    changeClass(button, "invisible", "visible");
+                                                                    fetch("/gameround", {
+                                                                        method: 'POST',
+                                                                        headers: {
+                                                                            'Accept': 'application/json',
+                                                                            'Content-Type': 'application/json',
+                                                                            'Authorization': 'Bearer ' + window.sessionStorage.getItem("myJWT")
+                                                                        }
+                                                                    })
+                                                                } else {
+                                                                    alert("Something went wrong while saving the gamescore");
+                                                                }
+                                                            })
+                                                    } else if (pressn === 5) { // if they're out of tries
+                                                        end("Sorry, you lost.", "Correct word: " + game.round.word.name);
+                                                    }
+                                                    pressn++;
+
+                                                }
+                                            }
+                                        );
+                                    }
+                                )
+                                .catch(error => alert(error));
+                        }
+                    }
+                }
+            )
+    }
+
+    // endgame
+    var end = function (msg, smallmsg) {
+        document.getElementById('msgBox').innerHTML = msg;
+        document.getElementById('smallMsg').innerHTML = smallmsg;
+        document.getElementById('guess').readOnly = true;
+    }
+
+    //If Next round
+    function nextRound() {
+        //Resetting the messages
+        document.getElementById('msgBox').innerHTML = "Guess the Word!"; // main message
+        document.getElementById('smallMsg').innerHTML = "Green = correct letter, Yellow = wrong place, White = letter is not in word, Red = Whole guess invalid"; // small message
+        document.getElementById('guess').readOnly = false;
+        changeClass(button, "visible", "invisible");
+
+        // clean boxes
+        for (var i = 1; i < 6; i++) {
+            var row = document.getElementById("row" + i);
+            var resets = row.getElementsByTagName('div');
+            for (var j = 0; j < resets.length; j++) {
+                resets[j].innerHTML = "";
+                changeClass(resets[j], "correct", "default");
+                changeClass(resets[j], "absent", "default");
+                changeClass(resets[j], "present", "default");
+                changeClass(resets[j], "invalid", "default");
+            }
+
+            //Removing extra boxes
+            if (resets.length == 7) {
+                row.removeChild(resets[6]);
+                row.removeChild(resets[5]);
+            } else if (resets.length == 6) {
+                row.removeChild(resets[5]);
+            }
+        }
+        //resetting timer
+        localStorage.timer = Date.now();
+        gameloop();
+    }
+
+    // start loop
+    gameloop()
+
+</script>
+</body>
+</html>

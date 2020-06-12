@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homescreen</title>
+    <script>
+        token = parseJwt(window.sessionStorage.getItem("myJWT"));
+        if (!token) {
+            window.location.href = "/";
+        }
+
+        function parseJwt(token) {
+            if (token) {
+                var base64Url = token.split('.')[1];
+                var base64 = base64Url.replace('-', '+').replace('_', '/');
+                return JSON.parse(window.atob(base64));
+            }
+        };
+    </script>
+    <style>
+        .btn:not(:disabled):not(.disabled) {
+            cursor: pointer;
+        }
+
+        .btn-block {
+            display: block;
+        }
+
+        .btn-primary {
+            color: #fff;
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        .btn {
+            display: inline-block;
+            font-weight: 400;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            border: 1px solid transparent;
+            padding: .375rem .75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: .25rem;
+            transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+        }
+
+        a {
+            color: #007bff;
+            text-decoration: none;
+            background-color: transparent;
+            -webkit-text-decoration-skip: objects;
+        }
+    </style>
+</head>
+<body>
+
+<button id="showHighScore" class="btn btn-primary btn-block">See your best highscore:</button>
+<p id="highscore"></p>
+<br>
+<a id="startGame" class="btn btn-primary btn-block">
+    Start a game</a>
+
+<script>
+    function getHighScore() {
+        fetch("/game/highscore", {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem("myJWT")
+            }
+        })
+
+            .then(response => response.json())
+            .then(function (myJson) {
+                if (!myJson.message) {
+                    document.getElementById("highscore").innerHTML = "Your best highscore ever is: " + myJson.score;
+                } else {
+                    document.getElementById("highscore").innerHTML = myJson.message;
+                }
+            })
+    }
+
+    function createGame() {
+        fetch("/game", {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + window.sessionStorage.getItem("myJWT")
+            }
+        })
+            .then((response) => {
+                if (response.ok) {
+                    window.location.href = "/lingogame.html";
+                } else {
+                    alert("Couldn't start a game");
+                }
+            })
+    }
+
+    var highScoreButton = document.querySelector("#showHighScore")
+    if (highScoreButton) {
+        highScoreButton.addEventListener("click", getHighScore);
+    }
+
+    var startGameButton = document.querySelector("#startGame")
+    if (startGameButton) {
+        startGameButton.addEventListener("click", createGame);
+    }
+</script>
+</body>
+</html>
