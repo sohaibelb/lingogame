@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface IFeedbackOnTurnRepository {
     int create(FeedbackOnTurnRequest feedbackOnTurnRequest);
-    List<FeedbackOnTurn> getByGameRound(int gameRound_id);
+    List<FeedbackOnTurn> getByGameRound(int gameRoundId);
 }

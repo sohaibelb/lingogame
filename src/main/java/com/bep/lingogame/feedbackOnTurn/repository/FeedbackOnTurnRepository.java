@@ -23,12 +23,12 @@ public class FeedbackOnTurnRepository implements IFeedbackOnTurnRepository {
         return jdbcTemplate.update(
                 "insert into feedbackOnTurn(gameRound_id) values (?)",
                 new Object[]{
-                        feedbackOnTurnRequest.getGameRound_id()
+                        feedbackOnTurnRequest.getGameRoundId()
                 });
     }
 
     @Override
-    public List<FeedbackOnTurn> getByGameRound(int gameRound_id) {
+    public List<FeedbackOnTurn> getByGameRound(int gameRoundId) {
         List<FeedbackOnTurn> feedbackOnTurns = new ArrayList<FeedbackOnTurn>();
         String query = "SELECT * FROM feedbackonturn WHERE gameround_id = ?";
         try {
@@ -36,7 +36,7 @@ public class FeedbackOnTurnRepository implements IFeedbackOnTurnRepository {
                     query,
                     new PreparedStatementSetter() {
                         public void setValues(PreparedStatement preparedStatement) throws SQLException {
-                            preparedStatement.setInt(1, gameRound_id);
+                            preparedStatement.setInt(1, gameRoundId);
                         }
                     },
                     (rs, rowNum) ->

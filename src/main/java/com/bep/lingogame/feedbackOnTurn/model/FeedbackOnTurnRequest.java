@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FeedbackOnTurnRequest {
-    private int gameRound_id;
+    private int gameRoundId;
 }

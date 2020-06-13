@@ -12,14 +12,8 @@ import java.util.ArrayList;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameRoundResponse {
-    private int gameRound_id;
-    private int game_id;
+    private int gameRoundId;
+    private int gameId;
     private Word word;
     private ArrayList<FeedbackOnTurn> feedbackOnTurns;
-
-    public GameRoundResponse(int gameRound_id, int game_id, Word word) {
-        this.gameRound_id = gameRound_id;
-        this.game_id = game_id;
-        this.word = word;
-    }
 }

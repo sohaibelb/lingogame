@@ -2,13 +2,9 @@ package com.bep.lingogame.controller;
 
 import com.bep.lingogame.account.model.Account;
 import com.bep.lingogame.account.service.AccountService;
-import com.bep.lingogame.feedbackOnTurn.model.FeedbackOnTurnRequest;
 import com.bep.lingogame.feedbackOnTurn.service.FeedbackOnTurnService;
-import com.bep.lingogame.game.model.Game;
-import com.bep.lingogame.game.service.GameService;
 import com.bep.lingogame.gameRound.model.GameRound;
 import com.bep.lingogame.gameRound.service.GameRoundService;
-import com.bep.lingogame.word.model.Word;
 import com.bep.lingogame.word.service.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,19 +20,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class GameRoundController {
 
     @Autowired
-    GameRoundService gameRoundService;
+    private GameRoundService gameRoundService;
 
     @Autowired
-    AccountService accountService;
+    private AccountService accountService;
 
     @Autowired
-    GameService gameService;
+    private WordService wordService;
 
     @Autowired
-    WordService wordService;
-
-    @Autowired
-    FeedbackOnTurnService feedbackOnTurnService;
+    private FeedbackOnTurnService feedbackOnTurnService;
 
 
     //Create a gameRound
@@ -48,27 +41,16 @@ public class GameRoundController {
 
         //Validate jwt token
         if (((UserDetails) principal).isAccountNonExpired()) {
-            //Get the game of the user
-            Game game = gameService.getGameByUser_id(accountOfUser.getUser_id());
 
             //Getting the last gameround of game
-            GameRound gameRound = gameRoundService.getLatestOfGameRoundOfGame(game.getGame_id());
+            GameRound gameRound = gameRoundService.getLatestOfGameRoundOfGameUser(accountOfUser.getUserId());
 
-            //Get the word of that last gameround
-            Word word = wordService.getWordByWordId(gameRound.getWord_id());
-            int wordLength = word.getName().length() + 1;
-
-            //If last gameround wordlength was 7 then reset to 5
-            if (wordLength == 8) {
-                wordLength = 5;
-            }
-
-            //Create a gameround for the game
-            GameRound newGameRound = new GameRound(gameRoundService.findGameRoundId(), game.getGame_id(), wordService.getWordByWordLength(wordLength).getWord_id());
+            //Create a new gameround for the game
+            GameRound newGameRound = new GameRound(gameRoundService.findGameRoundId(), gameRound.getGameId(), wordService.getNewGameRoundWord(gameRound.getWordId()).getWordId());
             int gameRoundCreated = gameRoundService.createGameRound(newGameRound);
 
             //Create feedback for every turn of the gameround
-            int feedBackCreated = feedbackOnTurnService.createFeedbackOnTurn(newGameRound.getGameRound_id());
+            int feedBackCreated = feedbackOnTurnService.createFeedbackOnTurn(newGameRound.getGameRoundId());
 
             //Checking if the game, gameround & feedback for every turn are created
             if (gameRoundCreated != 0 && feedBackCreated != 0) {

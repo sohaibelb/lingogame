@@ -25,19 +25,19 @@ import java.util.ArrayList;
 public class GameController {
 
     @Autowired
-    GameService gameService;
+    private GameService gameService;
 
     @Autowired
-    GameRoundService gameRoundService;
+    private GameRoundService gameRoundService;
 
     @Autowired
-    AccountService accountService;
+    private AccountService accountService;
 
     @Autowired
-    WordService wordService;
+    private WordService wordService;
 
     @Autowired
-    FeedbackOnTurnService feedbackOnTurnService;
+    private FeedbackOnTurnService feedbackOnTurnService;
 
 
     //Get the game of the user
@@ -50,16 +50,15 @@ public class GameController {
         Account accountOfUser = accountService.getAccountByUsername(username);
 
         //Get the game
-        Game game = gameService.getGameByUser_id(accountOfUser.getUser_id());
+        Game game = gameService.getGameByUser_id(accountOfUser.getUserId());
 
         //Creating GameRound Response
-        GameRound gameRound = gameRoundService.getLatestOfGameRoundOfGame(game.getGame_id());
-
-        GameRoundResponse gameRoundResponse = new GameRoundResponse(gameRound.getGameRound_id(), gameRound.getGame_id(), wordService.getWordByWordId(gameRound.getWord_id()),
-                (ArrayList<FeedbackOnTurn>) feedbackOnTurnService.getFeedbackOnTurnsByGameRound(gameRound.getGameRound_id()));
+        GameRound gameRound = gameRoundService.getLatestOfGameRoundOfGameUser(accountOfUser.getUserId());
+        GameRoundResponse gameRoundResponse = new GameRoundResponse(gameRound.getGameRoundId(), gameRound.getGameId(), wordService.getWordByWordId(gameRound.getWordId()),
+                (ArrayList<FeedbackOnTurn>) feedbackOnTurnService.getFeedbackOnTurnsByGameRound(gameRound.getGameRoundId()));
 
         //Creating the complete game response:
-        GameResponse gameResponse = new GameResponse(game.getGame_id(), game.getScore(), game.getUser_id(), gameRoundResponse);
+        GameResponse gameResponse = new GameResponse(game.getGameId(), game.getScore(), game.getUserId(), gameRoundResponse);
 
         return gameResponse;
     }
@@ -69,12 +68,11 @@ public class GameController {
     public Object getHighScore() {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        //Get Account of the user
+        //Get username
         String username = ((UserDetails) principal).getUsername();
-        Account accountOfUser = accountService.getAccountByUsername(username);
 
         //Get the game with the highscore of user
-        Game game = gameService.getHighScoreOfUser(accountOfUser.getUser_id());
+        Game game = gameService.getHighScoreOfUser(username);
 
         if (game == null) {
             return new Error("You didn't play a game yet");
@@ -87,7 +85,7 @@ public class GameController {
     @PostMapping("/{pressn}")
     public ResponseEntity<String> savingScoreOfGameRound(@PathVariable int pressn, @RequestBody FeedbackOnTurn feedbackOnTurn) {
         //Getting the gameId
-        int gameId = gameRoundService.getGameIdOfGameRound(feedbackOnTurn.getGameRound_id());
+        int gameId = gameRoundService.getGameIdOfGameRound(feedbackOnTurn.getGameRoundId());
         //Updating the gamescore
         int scoreSaved = gameService.saveScore(pressn, gameId);
 
@@ -110,14 +108,16 @@ public class GameController {
         if (((UserDetails) principal).isAccountNonExpired()) {
             //Create a game
             int gameCreated = gameService.createGame(accountOfUser);
-            //Get the game
-            Game game = gameService.getGameByUser_id(accountOfUser.getUser_id());
+
+            //Get the game that is created
+            Game game = gameService.getGameByUser_id(accountOfUser.getUserId());
+
             //Create a gameround for the game
-            GameRound gameRound = new GameRound(gameRoundService.findGameRoundId(), game.getGame_id(), wordService.getWordByWordLength(5).getWord_id());
+            GameRound gameRound = new GameRound(gameRoundService.findGameRoundId(), game.getGameId(), wordService.getWordByWordLength(5).getWordId());
             int gameRoundCreated = gameRoundService.createGameRound(gameRound);
 
             //Create feedback for every turn of the gameround
-            int feedBackCreated = feedbackOnTurnService.createFeedbackOnTurn(gameRound.getGameRound_id());
+            int feedBackCreated = feedbackOnTurnService.createFeedbackOnTurn(gameRound.getGameRoundId());
 
             //Checking if the game, gameround & feedback for every turn are created
             if (gameCreated != 0 && gameRoundCreated != 0 && feedBackCreated != 0) {

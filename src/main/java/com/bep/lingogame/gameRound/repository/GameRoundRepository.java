@@ -26,9 +26,9 @@ public class GameRoundRepository implements IGameRoundRepository {
         return jdbcTemplate.update(
                 "insert into gameround(gameround_id, game_id, word_id) values (?,?,?)",
                 new Object[]{
-                        gameRound.getGameRound_id(),
-                        gameRound.getGame_id(),
-                        gameRound.getWord_id()
+                        gameRound.getGameRoundId(),
+                        gameRound.getGameId(),
+                        gameRound.getWordId()
                 });
     }
 
@@ -78,7 +78,7 @@ public class GameRoundRepository implements IGameRoundRepository {
                             )
             );
             for (GameRound gameRound : gameRoundList) {
-                int gameRound_id = gameRound.getGameRound_id();
+                int gameRound_id = gameRound.getGameRoundId();
                 if (gameRound_id == 0) {
                     return 1;
                 } else {

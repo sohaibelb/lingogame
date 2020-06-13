@@ -9,5 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GameRequest {
     private int score;
-    private int user_id;
+    private int userId;
 }

@@ -17,8 +17,8 @@ public class WordService {
         return iWordRepository.findWordByLength(length);
     }
 
-    public Word getWordByWordId(int word_id) {
-        return iWordRepository.findWordById(word_id);
+    public Word getWordByWordId(int wordId) {
+        return iWordRepository.findWordById(wordId);
     }
 
     public boolean checkWordLength(String guessWord, Word word) {
@@ -30,5 +30,18 @@ public class WordService {
             return false;
         }
         return true;
+    }
+
+    public Word getNewGameRoundWord(int wordId) {
+        Word word = iWordRepository.findWordById(wordId);
+
+        int wordLength = word.getName().length() + 1;
+
+        //If last gameround wordlength was 7 then reset to 5
+        if (wordLength == 8) {
+            wordLength = 5;
+        }
+
+        return iWordRepository.findWordByLength(wordLength);
     }
 }

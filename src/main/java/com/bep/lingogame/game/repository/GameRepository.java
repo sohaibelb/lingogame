@@ -26,19 +26,19 @@ public class GameRepository implements IGameRepository {
                 "insert into game(score, user_id) values (?,?)",
                 new Object[]{
                         gameRequest.getScore(),
-                        gameRequest.getUser_id()
+                        gameRequest.getUserId()
                 });
     }
 
     @Override
-    public Game findByUser_id(int user_id) {
+    public Game findByUser_id(int userId) {
         String query = "SELECT * FROM GAME WHERE user_id = ? ORDER BY game_id DESC LIMIT 1";
         try {
             return jdbcTemplate.query(
                     query,
                     new PreparedStatementSetter() {
                         public void setValues(PreparedStatement preparedStatement) throws SQLException {
-                            preparedStatement.setInt(1, user_id);
+                            preparedStatement.setInt(1, userId);
                         }
                     }, new ResultSetExtractor<Game>() {
                         public Game extractData(ResultSet resultSet) throws SQLException,
@@ -61,14 +61,14 @@ public class GameRepository implements IGameRepository {
     }
 
     @Override
-    public Game getHighScoreOfUser(int user_id) {
+    public Game findHighScoreOfUser(int userId) {
         String query = "SELECT * FROM game where user_id=? ORDER BY score DESC LIMIT 1";
         try {
             return jdbcTemplate.query(
                     query,
                     new PreparedStatementSetter() {
                         public void setValues(PreparedStatement preparedStatement) throws SQLException {
-                            preparedStatement.setInt(1, user_id);
+                            preparedStatement.setInt(1, userId);
                         }
                     }, new ResultSetExtractor<Game>() {
                         public Game extractData(ResultSet resultSet) throws SQLException,

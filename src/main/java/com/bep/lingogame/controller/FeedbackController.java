@@ -18,19 +18,19 @@ import java.util.List;
 public class FeedbackController {
 
     @Autowired
-    GameRoundService gameRoundService;
+    private GameRoundService gameRoundService;
 
     @Autowired
-    WordService wordService;
+    private WordService wordService;
 
     @Autowired
-    FeedbackOnCharacterService feedbackOnCharacterService;
+    private FeedbackOnCharacterService feedbackOnCharacterService;
 
     @PostMapping("/{guess}")
     public Object checkWord(@PathVariable String guess, @RequestBody FeedbackOnTurn feedbackOnTurn) {
         //Get the to be guessed word
-        GameRound gameRound = gameRoundService.findGameRoundById(feedbackOnTurn.getGameRound_id());
-        Word word = wordService.getWordByWordId(gameRound.getWord_id());
+        GameRound gameRound = gameRoundService.findGameRoundById(feedbackOnTurn.getGameRoundId());
+        Word word = wordService.getWordByWordId(gameRound.getWordId());
 
         //Check if guessed word is longer than the to be guessed word
         if (!wordService.checkWordLength(guess, word)) {

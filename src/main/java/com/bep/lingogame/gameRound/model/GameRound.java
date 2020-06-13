@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GameRound {
-    private int gameRound_id;
-    private int game_id;
-    private int word_id;
+    private int gameRoundId;
+    private int gameId;
+    private int wordId;
 }

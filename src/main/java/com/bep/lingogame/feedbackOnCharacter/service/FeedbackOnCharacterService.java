@@ -32,7 +32,7 @@ public class FeedbackOnCharacterService {
         if (guessAsChar[0] != wordAsChar[0]) {
             for (char l : guessAsChar) {
                 //create a feedback with status invalid if its not correct
-                FeedbackOnCharacter feedbackOnCharacter = new FeedbackOnCharacter(feedbackOnCharacterId, feedbackOnTurn.getFeedbackOnTurn_id(), Character.toString(l), "Invalid");
+                FeedbackOnCharacter feedbackOnCharacter = new FeedbackOnCharacter(feedbackOnCharacterId, feedbackOnTurn.getFeedbackOnTurnId(), Character.toString(l), "Invalid");
                 feedbackOnCharacterList.add(feedbackOnCharacter);
                 feedbackOnCharacterId++;
             }
@@ -46,7 +46,7 @@ public class FeedbackOnCharacterService {
             //continue with checking
             for (char l : guessAsChar) {
                 //create a feedback with status absent
-                FeedbackOnCharacter feedbackOnCharacter = new FeedbackOnCharacter(feedbackOnCharacterId, feedbackOnTurn.getFeedbackOnTurn_id(), Character.toString(l), "Absent");
+                FeedbackOnCharacter feedbackOnCharacter = new FeedbackOnCharacter(feedbackOnCharacterId, feedbackOnTurn.getFeedbackOnTurnId(), Character.toString(l), "Absent");
                 feedbackOnCharacterList.add(feedbackOnCharacter);
                 feedbackOnCharacterId++;
             }

@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Word {
-    private int word_id;
+    private int wordId;
     private String name;
 }

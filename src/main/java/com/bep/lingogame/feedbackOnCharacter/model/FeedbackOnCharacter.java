@@ -8,9 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class FeedbackOnCharacter {
-    private int feedbackOnCharacter_id;
-    private int feedbackOnTurn_id;
+    private int feedbackOnCharacterId;
+    private int feedbackOnTurnId;
     private String character;
     private String feedback;
-
 }

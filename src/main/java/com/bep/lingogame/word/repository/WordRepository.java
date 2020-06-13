@@ -49,14 +49,14 @@ public class WordRepository implements IWordRepository {
     }
 
     @Override
-    public Word findWordById(int word_id) {
+    public Word findWordById(int wordId) {
         String query = "SELECT * from word WHERE word_id = ?";
         try {
             return jdbcTemplate.query(
                     query,
                     new PreparedStatementSetter() {
                         public void setValues(PreparedStatement preparedStatement) throws SQLException {
-                            preparedStatement.setInt(1, word_id);
+                            preparedStatement.setInt(1, wordId);
                         }
                     }, new ResultSetExtractor<Word>() {
                         public Word extractData(ResultSet resultSet) throws SQLException,

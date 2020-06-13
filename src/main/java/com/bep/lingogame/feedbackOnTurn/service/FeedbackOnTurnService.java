@@ -25,7 +25,7 @@ public class FeedbackOnTurnService {
         return result;
     }
 
-    public List<FeedbackOnTurn> getFeedbackOnTurnsByGameRound(int gameRound_id) {
-        return iFeedbackOnTurnRepository.getByGameRound(gameRound_id);
+    public List<FeedbackOnTurn> getFeedbackOnTurnsByGameRound(int gameRoundId) {
+        return iFeedbackOnTurnRepository.getByGameRound(gameRoundId);
     }
 }

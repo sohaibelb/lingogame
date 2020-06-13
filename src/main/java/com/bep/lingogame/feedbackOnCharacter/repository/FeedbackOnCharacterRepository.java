@@ -19,8 +19,8 @@ public class FeedbackOnCharacterRepository implements IFeedbackOnCharacterReposi
         return jdbcTemplate.update(
                 "insert into feedbackoncharacter(feedbackoncharacter_id, feedbackonturn_id, character, feedback) values (?,?,?,?)",
                 new Object[]{
-                        feedbackOnCharacter.getFeedbackOnCharacter_id(),
-                        feedbackOnCharacter.getFeedbackOnTurn_id(),
+                        feedbackOnCharacter.getFeedbackOnCharacterId(),
+                        feedbackOnCharacter.getFeedbackOnTurnId(),
                         feedbackOnCharacter.getCharacter(),
                         feedbackOnCharacter.getFeedback()
                 });
@@ -43,7 +43,7 @@ public class FeedbackOnCharacterRepository implements IFeedbackOnCharacterReposi
                             )
             );
             for (FeedbackOnCharacter feedbackOnCharacter : feedbackOnCharacterList) {
-                int feedbackoncharacter_id = feedbackOnCharacter.getFeedbackOnCharacter_id();
+                int feedbackoncharacter_id = feedbackOnCharacter.getFeedbackOnCharacterId();
                 if (feedbackoncharacter_id == 0) {
                     return 1;
                 } else {
