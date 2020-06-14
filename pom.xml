@@ -21,7 +21,7 @@
         <sonar.projectKey>sohaibelb_lingogame</sonar.projectKey>
         <sonar.organization>sohaibelb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
-        <sonar.login>aa6cb5eac3a118773d0ee942ff4b62949e3bc70d</sonar.login>
+        <sonar.login>5b524bfd39f3005012a1e1a8e5e5dc59f30fff61</sonar.login>
     </properties>
 
 

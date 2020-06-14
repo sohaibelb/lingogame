@@ -35,11 +35,26 @@ class AccountServiceTest {
 
     @Test
     void testCreateAccount() {
-        final Account account = new Account(0, "username", "password");
-        when(mockAccountRepository.create(new Account(0, "username", "password"))).thenReturn(0);
+        int expectedResult = 1;
+        final Account account = new Account(1, "piet", "heijn");
+        when(mockAccountRepository.findByUsername("piet")).thenReturn(null);
+        when(mockAccountRepository.create(new Account(1, "piet", "heijn"))).thenReturn(1);
 
-        final int result = accountServiceUnderTest.createAccount(account);
+        final int actualResult = accountServiceUnderTest.createAccount(account);
 
-        assertEquals(0, result);
+        assertEquals(expectedResult, actualResult);
+    }
+
+    //Test if an account will be created with a username that already exist
+    @Test
+    void testCreateAccountWithUsernameThatExist() {
+        int expectedResult = 0;
+        final Account account = new Account(1, "username", "password");
+        when(mockAccountRepository.findByUsername("username")).thenReturn(new Account(0, "username", "password"));
+        when(mockAccountRepository.create(new Account(1, "username", "password"))).thenReturn(1);
+
+        final int actualResult = accountServiceUnderTest.createAccount(account);
+
+        assertEquals(expectedResult, actualResult);
     }
 }

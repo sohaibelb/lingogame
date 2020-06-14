@@ -18,6 +18,9 @@ public class AccountService {
     }
 
     public int createAccount(Account account) {
+        if (iAccountRepository.findByUsername(account.getUsername()) != null) {
+            return 0;
+        }
         return iAccountRepository.create(account);
     }
 }

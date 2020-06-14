@@ -48,6 +48,28 @@ class WordServiceTest {
         assertEquals(expectedResult, result);
     }
 
+    //Setting up for checking the regex
+    public static Stream<Arguments> argsRegexCheck() {
+        return Stream.of(
+                Arguments.of("baard", true), //correct word, 5 letters
+                Arguments.of("bedden", true), //correct word, 6 letters
+                Arguments.of("schrift", true), //correct word, 7 letters
+                Arguments.of("bËdden", false), //incorrect word , has Ë
+                Arguments.of("sp-elen",false), //incorrect word, has -
+                Arguments.of("tak",false),//incorrect word, shorter than 5 letters
+                Arguments.of("superlangewoord",false) //incorrect word, longer than 7 letters
+        );
+    }
+
+    //Checking if the regex works for the given words
+    @ParameterizedTest
+    @MethodSource({"argsRegexCheck"})
+    void testCheckWordRegex(String guessWord, boolean expectedResult) {
+        final boolean actualResult = wordServiceUnderTest.checkWordRegex(guessWord);
+
+         assertEquals(actualResult, expectedResult);
+    }
+
     //The follow two tests are testing the function: checkWordLength()
     @Test
     void testCheckCorrectWordLength() { //A Word with a correct length

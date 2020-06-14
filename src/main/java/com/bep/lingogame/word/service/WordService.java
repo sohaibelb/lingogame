@@ -21,15 +21,22 @@ public class WordService {
         return iWordRepository.findWordById(wordId);
     }
 
+    public boolean checkWordRegex(String guessWord) {
+        if (guessWord.matches("^[a-z]{5,7}$")) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean checkWordLength(String guessWord, Word word) {
         //Get length of word
         int lengthOfWord = word.getName().length();
 
         //Check if guessed word is longer than the to be guessed word
-        if (guessWord.length() != lengthOfWord) {
-            return false;
+        if (guessWord.length() == lengthOfWord && checkWordRegex(guessWord)) {
+            return true;
         }
-        return true;
+        return false;
     }
 
     public Word getNewGameRoundWord(int wordId) {
