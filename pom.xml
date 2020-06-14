@@ -22,6 +22,7 @@
         <sonar.organization>sohaibelb</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
         <sonar.login>5b524bfd39f3005012a1e1a8e5e5dc59f30fff61</sonar.login>
+        <dependency-check-maven.version>5.3.0</dependency-check-maven.version>
     </properties>
 
 
@@ -79,7 +80,6 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
 
-
     </dependencies>
 
     <build>
@@ -104,6 +104,18 @@
                         <phase>test</phase>
                         <goals>
                             <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>${dependency-check-maven.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
                         </goals>
                     </execution>
                 </executions>
