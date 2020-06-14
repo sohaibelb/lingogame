@@ -21,9 +21,16 @@ Code coverage: JaCoCo
 Source code repository: GitHub  
 Build pipeline: BUDDY  
 Static analysis en coverage: SonarCloud(zie badge onderin)  
-Deployment (PaaS): Heroku  
+Deployment (PaaS): Heroku   
+Packaging: image deploy naar Docker Hub  
 Database: Heroku (Postgres)  
 Security Analysis: OWASP Dependency-Check  
+   
+Uitleg pipeline:  
+- runt alle testen en voert Static Analysis en coverage uit.  
+- image wordt gedeployed naar Docker Hub    
+- App wordt gedeployed naar Heroku
+- Stuurt een bericht naar discord dat de pipeline succesvol geëxecuteerd is  
     
 # Screenshots
 Zie canvas  
