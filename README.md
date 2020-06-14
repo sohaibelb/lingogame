@@ -1,6 +1,3 @@
-Projectinfo
-Projectinfo
-
 # lingowords
 
 #  SonarCloud 
